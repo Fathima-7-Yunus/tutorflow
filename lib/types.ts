@@ -69,8 +69,8 @@ export function isValidTransition(from: SessionStatus, to: SessionStatus): boole
 }
 
 export const STATUS_STYLES: Record<string, string> = {
-  scheduled: 'bg-amber-100 text-amber-700',
-  in_progress: 'bg-blue-100 text-blue-700',
-  completed: 'bg-slate-100 text-slate-600',
-  ai_reviewed: 'bg-emerald-100 text-emerald-700',
+  scheduled: 'bg-amber-50 text-amber-800 border border-amber-200',
+  in_progress: 'bg-[#EDE7F8] text-[#55418F] border border-[#D5C9EB]',
+  completed: 'bg-stone-100 text-stone-600 border border-stone-200',
+  ai_reviewed: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
 }

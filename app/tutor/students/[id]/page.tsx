@@ -37,61 +37,61 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
 
   return (
     <div className="max-w-3xl space-y-6">
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/tutor" className="hover:text-indigo-600">Dashboard</Link>
+      <div className="flex items-center gap-2 text-xs font-semibold text-[#7A7090]">
+        <Link href="/tutor" className="hover:text-[#7E6BB5] transition">Dashboard</Link>
         <span>·</span>
-        <span className="text-slate-800">{student.name}</span>
+        <span className="text-[#241C38]">{student.name}</span>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{student.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-[#241C38]">{student.name}</h1>
           </div>
           <ScheduleSessionForm students={[student]} defaultStudentId={id} />
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Subject</p>
-            <p className="mt-1 text-sm">{student.subject || 'Not set'}</p>
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#7A7090]">Subject</p>
+            <p className="mt-1 text-sm font-semibold text-[#241C38]">{student.subject || 'Not set'}</p>
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Current level</p>
-            <p className="mt-1 text-sm">{student.current_level || 'Not set'}</p>
+          <div className="rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#7A7090]">Current level</p>
+            <p className="mt-1 text-sm font-semibold text-[#241C38]">{student.current_level || 'Not set'}</p>
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Learning goals</p>
-            <p className="mt-1 text-sm">{student.learning_goals || 'Not set'}</p>
+          <div className="rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#7A7090]">Learning goals</p>
+            <p className="mt-1 text-sm text-[#463D5C]">{student.learning_goals || 'Not set'}</p>
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Weak areas</p>
-            <p className="mt-1 text-sm">{student.weak_areas || 'Not set'}</p>
+          <div className="rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#7A7090]">Weak areas</p>
+            <p className="mt-1 text-sm text-[#463D5C]">{student.weak_areas || 'Not set'}</p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
         <ProgressSummaryButton studentId={id} />
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold">Sessions ({sessions.length})</h2>
+      <div className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-bold text-[#241C38]">Sessions ({sessions.length})</h2>
         {sessions.length === 0 ? (
-          <p className="text-sm text-slate-400">No sessions yet.</p>
+          <p className="text-sm text-[#9E95AF]">No sessions yet.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {sessions.map((s) => (
               <li key={s.id}>
                 <Link
                   href={`/tutor/sessions/${s.id}`}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                  className="flex items-center justify-between rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] px-4 py-3.5 transition hover:border-[#7E6BB5]/40 hover:bg-[#FAF7FD] hover:shadow-xs group"
                 >
                   <div>
-                    <p className="font-medium">{s.topic}</p>
-                    <p className="text-xs text-slate-500">{new Date(s.starts_at).toLocaleString()}</p>
+                    <p className="font-semibold text-[#241C38] group-hover:text-[#6D58A9] transition">{s.topic}</p>
+                    <p className="text-xs text-[#7A7090]">{new Date(s.starts_at).toLocaleString()}</p>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[s.status]}`}>
                     {s.status.replace('_', ' ')}
                   </span>
                 </Link>

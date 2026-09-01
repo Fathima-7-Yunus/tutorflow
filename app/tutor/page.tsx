@@ -33,39 +33,38 @@ export default async function TutorDashboard() {
     .filter((s) => new Date(s.starts_at).getTime() < now)
     .slice(0, 5)
 
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Welcome, {tutor.full_name}</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage your students and sessions</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#241C38]">Welcome, {tutor.full_name}</h1>
+          <p className="mt-1 text-sm text-[#6C6382]">Manage your students and sessions</p>
         </div>
       </div>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Students ({students.length})</h2>
+        <div className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#241C38]">Students ({students.length})</h2>
             <AddStudentForm />
           </div>
           {students.length === 0 ? (
-            <p className="text-sm text-slate-400">No students yet. Add your first student to get started.</p>
+            <p className="text-sm text-[#9E95AF]">No students yet. Add your first student to get started.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-2.5">
               {students.map((s) => (
                 <li key={s.id}>
                   <Link
                     href={`/tutor/students/${s.id}`}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                    className="flex items-center justify-between rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] px-4 py-3.5 transition hover:border-[#7E6BB5]/40 hover:bg-[#FAF7FD] hover:shadow-xs group"
                   >
                     <div>
-                      <p className="font-medium">{s.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-semibold text-[#241C38] group-hover:text-[#6D58A9] transition">{s.name}</p>
+                      <p className="text-xs text-[#7A7090]">
                         {s.subject || 'No subject'} · {s.current_level || 'No level'}
                       </p>
                     </div>
-                    <span className="text-xs text-indigo-600">View →</span>
+                    <span className="text-xs font-semibold text-[#7E6BB5] group-hover:translate-x-0.5 transition">View →</span>
                   </Link>
                 </li>
               ))}
@@ -73,28 +72,28 @@ export default async function TutorDashboard() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Upcoming sessions</h2>
+        <div className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#241C38]">Upcoming sessions</h2>
             <ScheduleSessionForm students={students} />
           </div>
           {upcoming.length === 0 ? (
-            <p className="text-sm text-slate-400">No upcoming sessions. Schedule your first session.</p>
+            <p className="text-sm text-[#9E95AF]">No upcoming sessions. Schedule your first session.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-2.5">
               {upcoming.map((s) => (
                 <li key={s.id}>
                   <Link
                     href={`/tutor/sessions/${s.id}`}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                    className="flex items-center justify-between rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] px-4 py-3.5 transition hover:border-[#7E6BB5]/40 hover:bg-[#FAF7FD] hover:shadow-xs group"
                   >
                     <div>
-                      <p className="font-medium">{s.topic}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-semibold text-[#241C38] group-hover:text-[#6D58A9] transition">{s.topic}</p>
+                      <p className="text-xs text-[#7A7090]">
                         {new Date(s.starts_at).toLocaleString()} · {s.students?.name ?? 'Student'}
                       </p>
                     </div>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[s.status]}`}>
                       {s.status.replace('_', ' ')}
                     </span>
                   </Link>
@@ -105,25 +104,25 @@ export default async function TutorDashboard() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold">Recent sessions</h2>
+      <section className="rounded-3xl border border-[#E6DFEF] bg-white p-6 shadow-sm">
+        <h2 className="mb-5 text-lg font-bold text-[#241C38]">Recent sessions</h2>
         {recentPast.length === 0 ? (
-          <p className="text-sm text-slate-400">No past sessions yet.</p>
+          <p className="text-sm text-[#9E95AF]">No past sessions yet.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {recentPast.map((s) => (
               <li key={s.id}>
                 <Link
                   href={`/tutor/sessions/${s.id}`}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                  className="flex items-center justify-between rounded-2xl border border-[#ECE4F5] bg-[#FDFCFA] px-4 py-3.5 transition hover:border-[#7E6BB5]/40 hover:bg-[#FAF7FD] hover:shadow-xs group"
                 >
                   <div>
-                    <p className="font-medium">{s.topic}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="font-semibold text-[#241C38] group-hover:text-[#6D58A9] transition">{s.topic}</p>
+                    <p className="text-xs text-[#7A7090]">
                       {new Date(s.starts_at).toLocaleString()} · {s.students?.name ?? 'Student'}
                     </p>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[s.status]}`}>
                     {s.status.replace('_', ' ')}
                   </span>
                 </Link>

@@ -38,16 +38,16 @@ export default function SessionStatusControls({ sessionId, status, startsAt }: P
 
   if (status === 'scheduled') {
     return (
-      <div className="space-y-2">
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+      <div className="space-y-2.5">
+        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-red-600">{error}</p>}
         <button
           onClick={() => transition('in_progress')}
           disabled={loading}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
+          className="rounded-xl bg-[#7E6BB5] hover:bg-[#6D58A9] px-4 py-2.5 text-xs font-bold text-white transition shadow-xs hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer"
         >
           {loading ? 'Starting…' : '▶ Start session'}
         </button>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-[#7A7090]">
           Starts {new Date(startsAt).toLocaleString()}. Can begin up to 15 minutes early.
         </p>
       </div>
@@ -56,12 +56,12 @@ export default function SessionStatusControls({ sessionId, status, startsAt }: P
 
   if (status === 'in_progress') {
     return (
-      <div className="space-y-2">
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+      <div className="space-y-2.5">
+        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-red-600">{error}</p>}
         <button
           onClick={() => transition('completed')}
           disabled={loading}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-60"
+          className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white transition shadow-xs hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer"
         >
           {loading ? 'Completing…' : '✓ Complete session'}
         </button>

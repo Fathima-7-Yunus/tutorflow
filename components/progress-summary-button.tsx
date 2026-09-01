@@ -39,18 +39,18 @@ export default function ProgressSummaryButton({ studentId }: Props) {
         <button
           onClick={handleProgress}
           disabled={loading}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60"
+          className="rounded-xl bg-[#7E6BB5] hover:bg-[#6D58A9] px-4 py-2.5 text-xs font-bold text-white transition shadow-xs hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer"
         >
           {loading ? 'Analyzing progress…' : '📈 Generate progress summary'}
         </button>
       )}
 
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-red-600">{error}</p>}
 
       {summary && (
-        <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-5">
-          <h4 className="mb-2 font-semibold text-indigo-900">Progress summary</h4>
-          <p className="text-sm leading-relaxed text-slate-700">{summary}</p>
+        <div className="rounded-2xl border border-[#D5C9EB] bg-[#FAF7FD] p-5">
+          <h4 className="mb-2 font-bold text-[#2E2054]">Progress summary</h4>
+          <p className="text-sm leading-relaxed text-[#3E3553]">{summary}</p>
         </div>
       )}
     </div>
