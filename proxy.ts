@@ -43,6 +43,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Pass user info to pages via internal headers, so pages don't need a second getUser() call.
+  const cookies = supabaseResponse.cookies.getAll()
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-user-id', user.id)
+  requestHeaders.set('x-user-email', user.email ?? '')
+  requestHeaders.set('x-user-role', (user.user_metadata?.role as string) ?? '')
+  requestHeaders.set('x-user-name', (user.user_metadata?.full_name as string) || user.email || '')
+  supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
+  cookies.forEach((c) => supabaseResponse.cookies.set(c.name, c.value))
+
   const role = user.user_metadata?.role as string | undefined
 
   if (pathname.startsWith('/tutor')) {

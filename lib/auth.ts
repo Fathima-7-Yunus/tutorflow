@@ -1,13 +1,34 @@
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import type { Profile, UserRole } from '@/lib/types'
 
-export async function getCurrentUser() {
+interface AuthUser {
+  id: string
+  email: string | null
+  user_metadata: Record<string, unknown>
+  created_at: string | null
+}
+
+async function getCurrentUser(): Promise<AuthUser | null> {
+  const h = await headers()
+  const userId = h.get('x-user-id')
+  if (userId) {
+    return {
+      id: userId,
+      email: h.get('x-user-email'),
+      user_metadata: {
+        role: h.get('x-user-role'),
+        full_name: h.get('x-user-name'),
+      },
+      created_at: '',
+    }
+  }
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  return user ?? null
+  return user as AuthUser | null
 }
 
 export async function getProfile(): Promise<Profile | null> {
