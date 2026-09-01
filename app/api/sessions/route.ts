@@ -12,13 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'tutor') {
+  if (user.user_metadata?.role !== 'tutor') {
     return NextResponse.json({ error: 'Only tutors can schedule sessions' }, { status: 403 })
   }
 

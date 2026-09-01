@@ -11,15 +11,15 @@ export async function getCurrentUser() {
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient()
   const user = await getCurrentUser()
   if (!user) return null
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-  return data ?? null
+  return {
+    id: user.id,
+    email: user.email ?? '',
+    full_name: (user.user_metadata?.full_name as string) ?? user.email ?? '',
+    role: (user.user_metadata?.role as UserRole) ?? 'student',
+    created_at: user.created_at ?? '',
+  }
 }
 
 export async function requireUser() {

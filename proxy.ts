@@ -43,13 +43,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const role = profile?.role
+  const role = user.user_metadata?.role as string | undefined
 
   if (pathname.startsWith('/tutor')) {
     if (role !== 'tutor') return roleRedirect(role, request)

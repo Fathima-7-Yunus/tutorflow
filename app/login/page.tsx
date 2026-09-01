@@ -28,13 +28,7 @@ function LoginForm() {
       return
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
-
-    const role = profile?.role
+    const role = data.user.user_metadata?.role as string | undefined
     if (role === 'tutor') router.push(redirect || '/tutor')
     else if (role === 'student') router.push(redirect || '/student')
     else {

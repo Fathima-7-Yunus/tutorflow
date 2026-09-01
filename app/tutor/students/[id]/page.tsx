@@ -13,21 +13,25 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
   const tutor = await requireRole('tutor')
   const supabase = await createClient()
 
-  const { data: student, error: studentError } = await supabase
-    .from('students')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const [studentResult, sessionsResult] = await Promise.all([
+    supabase
+      .from('students')
+      .select('*')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('sessions')
+      .select('*')
+      .eq('student_id', id)
+      .order('starts_at', { ascending: false }),
+  ])
+
+  const student = studentResult.data
+  const studentError = studentResult.error
 
   if (studentError || !student || student.tutor_id !== tutor.id) {
     notFound()
   }
-
-  const sessionsResult = await supabase
-    .from('sessions')
-    .select('*')
-    .eq('student_id', id)
-    .order('starts_at', { ascending: false })
 
   const sessions = sessionsResult.data ?? []
 
