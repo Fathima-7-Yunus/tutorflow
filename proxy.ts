@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (!user) {
-    if (pathname === '/login') return supabaseResponse
+    if (pathname === '/' || pathname === '/login') return supabaseResponse
     if (pathname.startsWith('/api/')) return supabaseResponse
     const url = new URL('/login', request.url)
     url.searchParams.set('redirect', pathname)
@@ -74,6 +74,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|api/auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/auth).*)',
   ],
 }
