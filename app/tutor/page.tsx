@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { requireRole } from '@/lib/auth'
-import type { Session } from '@/lib/types'
+import { STATUS_STYLES, type Session } from '@/lib/types'
 import AddStudentForm from '@/components/add-student-form'
 import ScheduleSessionForm from '@/components/schedule-session-form'
 
@@ -27,18 +27,12 @@ export default async function TutorDashboard() {
   const students = studentsResult.data ?? []
   const sessions = (sessionsResult.data ?? []) as (Session & { students?: { name: string } })[]
 
-  const now = Date.now()
+  const now = new Date().getTime()
   const upcoming = sessions.filter((s) => new Date(s.starts_at).getTime() >= now)
   const recentPast = sessions
     .filter((s) => new Date(s.starts_at).getTime() < now)
     .slice(0, 5)
 
-  const statusStyles: Record<string, string> = {
-    scheduled: 'bg-amber-100 text-amber-700',
-    in_progress: 'bg-blue-100 text-blue-700',
-    completed: 'bg-slate-100 text-slate-600',
-    ai_reviewed: 'bg-emerald-100 text-emerald-700',
-  }
 
   return (
     <div className="space-y-8">
@@ -100,7 +94,7 @@ export default async function TutorDashboard() {
                         {new Date(s.starts_at).toLocaleString()} · {s.students?.name ?? 'Student'}
                       </p>
                     </div>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[s.status]}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
                       {s.status.replace('_', ' ')}
                     </span>
                   </Link>
@@ -129,7 +123,7 @@ export default async function TutorDashboard() {
                       {new Date(s.starts_at).toLocaleString()} · {s.students?.name ?? 'Student'}
                     </p>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[s.status]}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
                     {s.status.replace('_', ' ')}
                   </span>
                 </Link>

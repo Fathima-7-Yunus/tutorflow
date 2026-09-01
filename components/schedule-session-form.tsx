@@ -20,6 +20,15 @@ export default function ScheduleSessionForm({ students, defaultStudentId, onSche
     topic: '',
     starts_at: '',
   })
+  const [minDateTime, setMinDateTime] = useState('')
+
+  function openModal() {
+    const d = new Date(Date.now() + 5 * 60 * 1000)
+    d.setSeconds(0, 0)
+    const offset = d.getTimezoneOffset()
+    setMinDateTime(new Date(d.getTime() - offset * 60000).toISOString().slice(0, 16))
+    setOpen(true)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -62,18 +71,10 @@ export default function ScheduleSessionForm({ students, defaultStudentId, onSche
     onScheduled?.()
   }
 
-  const minDateTime = (() => {
-    const d = new Date(Date.now() + 5 * 60 * 1000)
-    d.setSeconds(0, 0)
-    const offset = d.getTimezoneOffset()
-    const local = new Date(d.getTime() - offset * 60000)
-    return local.toISOString().slice(0, 16)
-  })()
-
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={openModal}
         className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-indigo-700"
       >
         + Schedule session

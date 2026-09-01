@@ -50,18 +50,14 @@ export async function POST(request: Request) {
     )
   }
 
-  const sessionsWithReviews = sessions.map((s) => ({
+  const sessionsWithReviews = sessions.map((s: { topic: string; ai_review: AiReview | null }) => ({
     topic: s.topic,
-    ai_review: s.ai_review as AiReview | null,
+    ai_review: s.ai_review,
   }))
 
   const prompts = buildProgressPrompt(sessionsWithReviews)
 
-  const result = (await callAi({
-    systemPrompt: prompts.systemPrompt,
-    userPrompt: prompts.userPrompt,
-    responseFormat: 'json_object',
-  })) as { summary?: string } | null
+  const result = await callAi(prompts.systemPrompt, prompts.userPrompt)
 
   if (!result || !result.summary) {
     return NextResponse.json(

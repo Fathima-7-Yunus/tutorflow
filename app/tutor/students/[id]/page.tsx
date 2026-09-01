@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { requireRole } from '@/lib/auth'
-import type { Session } from '@/lib/types'
+import { STATUS_STYLES } from '@/lib/types'
 import ProgressSummaryButton from '@/components/progress-summary-button'
 import ScheduleSessionForm from '@/components/schedule-session-form'
 
@@ -29,14 +29,7 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
     .eq('student_id', id)
     .order('starts_at', { ascending: false })
 
-  const sessions = (sessionsResult.data ?? []) as Session[]
-
-  const statusStyles: Record<string, string> = {
-    scheduled: 'bg-amber-100 text-amber-700',
-    in_progress: 'bg-blue-100 text-blue-700',
-    completed: 'bg-slate-100 text-slate-600',
-    ai_reviewed: 'bg-emerald-100 text-emerald-700',
-  }
+  const sessions = sessionsResult.data ?? []
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -51,7 +44,7 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
           <div>
             <h1 className="text-2xl font-bold">{student.name}</h1>
           </div>
-          <ScheduleSessionForm students={[{ ...student, id }]} defaultStudentId={id} />
+          <ScheduleSessionForm students={[student]} defaultStudentId={id} />
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4">
@@ -94,7 +87,7 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
                     <p className="font-medium">{s.topic}</p>
                     <p className="text-xs text-slate-500">{new Date(s.starts_at).toLocaleString()}</p>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[s.status]}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
                     {s.status.replace('_', ' ')}
                   </span>
                 </Link>

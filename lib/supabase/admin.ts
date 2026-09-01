@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- no generated DB types; admin client is deliberately untyped */
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 

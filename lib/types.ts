@@ -67,3 +67,10 @@ export const VALID_TRANSITIONS: Record<SessionStatus, SessionStatus[]> = {
 export function isValidTransition(from: SessionStatus, to: SessionStatus): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false
 }
+
+export const STATUS_STYLES: Record<string, string> = {
+  scheduled: 'bg-amber-100 text-amber-700',
+  in_progress: 'bg-blue-100 text-blue-700',
+  completed: 'bg-slate-100 text-slate-600',
+  ai_reviewed: 'bg-emerald-100 text-emerald-700',
+}

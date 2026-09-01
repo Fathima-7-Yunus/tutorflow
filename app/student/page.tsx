@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireRole } from '@/lib/auth'
-import type { Session, AiReview } from '@/lib/types'
+import { STATUS_STYLES } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
-
 export default async function StudentDashboard() {
   const studentProfile = await requireRole('student')
   const supabase = await createClient()
@@ -28,9 +27,9 @@ export default async function StudentDashboard() {
     .eq('student_id', student.id)
     .order('starts_at', { ascending: false })
 
-  const allSessions = (sessions ?? []) as Session[]
+  const allSessions = sessions ?? []
 
-  const now = Date.now()
+  const now = new Date().getTime()
   const upcoming = allSessions
     .filter((s) => new Date(s.starts_at).getTime() >= now && s.status !== 'completed' && s.status !== 'ai_reviewed')
     .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime())
@@ -43,15 +42,8 @@ export default async function StudentDashboard() {
     .map((s) => ({
       topic: s.topic,
       date: s.starts_at,
-      homework: (s.ai_review as AiReview).homework,
+      homework: s.ai_review.homework,
     }))
-
-  const statusStyles: Record<string, string> = {
-    scheduled: 'bg-amber-100 text-amber-700',
-    in_progress: 'bg-blue-100 text-blue-700',
-    completed: 'bg-slate-100 text-slate-600',
-    ai_reviewed: 'bg-emerald-100 text-emerald-700',
-  }
 
   return (
     <div className="space-y-8">
@@ -74,7 +66,7 @@ export default async function StudentDashboard() {
                   <p className="font-medium">{s.topic}</p>
                   <p className="text-xs text-slate-500">{new Date(s.starts_at).toLocaleString()}</p>
                 </div>
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[s.status]}`}>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
                   {s.status.replace('_', ' ')}
                 </span>
               </li>
@@ -96,7 +88,7 @@ export default async function StudentDashboard() {
                     <p className="font-medium">{s.topic}</p>
                     <p className="text-xs text-slate-500">{new Date(s.starts_at).toLocaleString()}</p>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[s.status]}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[s.status]}`}>
                     {s.status.replace('_', ' ')}
                   </span>
                 </div>
@@ -109,7 +101,7 @@ export default async function StudentDashboard() {
                 {s.ai_review && (
                   <div className="mt-2 space-y-2 rounded-lg bg-teal-50 p-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">AI review</p>
-                    <p className="text-sm text-slate-700">{(s.ai_review as AiReview).summary}</p>
+                    <p className="text-sm text-slate-700">{s.ai_review.summary}</p>
                   </div>
                 )}
               </li>
@@ -127,7 +119,7 @@ export default async function StudentDashboard() {
                 <p className="mb-1 text-sm font-medium">{h.topic}</p>
                 <p className="mb-1 text-xs text-slate-500">{new Date(h.date).toLocaleDateString()}</p>
                 <ol className="list-decimal space-y-1 pl-5 text-sm text-slate-700">
-                  {h.homework.map((item, j) => <li key={j}>{item}</li>)}
+                  {h.homework.map((item: string, j: number) => <li key={j}>{item}</li>)}
                 </ol>
               </li>
             ))}

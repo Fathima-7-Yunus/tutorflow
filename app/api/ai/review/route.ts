@@ -63,8 +63,8 @@ export async function POST(request: Request) {
     .order('starts_at', { ascending: true })
 
   const pastReviews = (pastReviewsData ?? [])
-    .map((s) => {
-      const r = s.ai_review as AiReview | null
+    .map((s: { ai_review: AiReview | null }) => {
+      const r = s.ai_review
       return r?.summary ?? null
     })
     .filter(Boolean) as string[]
@@ -78,16 +78,12 @@ export async function POST(request: Request) {
       weak_areas: student.weak_areas,
     },
     session.topic,
-    session.notes || '',
+    session.notes,
     pastReviews,
     session.ai_plan as { objectives: string[] } | null,
   )
 
-  const result = (await callAi({
-    systemPrompt: prompts.systemPrompt,
-    userPrompt: prompts.userPrompt,
-    responseFormat: 'json_object',
-  })) as Partial<AiReview> | null
+  const result = await callAi(prompts.systemPrompt, prompts.userPrompt)
 
   if (!result || !result.summary || !result.homework || !result.next_suggestion) {
     return NextResponse.json(

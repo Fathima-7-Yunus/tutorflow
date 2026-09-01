@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     .neq('ai_review', null)
     .order('starts_at', { ascending: true })
 
-  const pastSessionsSafe = (pastSessions ?? []).map((s) => ({
+  const pastSessionsSafe = (pastSessions ?? []).map((s: { topic: string; ai_review: unknown }) => ({
     topic: s.topic,
     ai_review: typeof s.ai_review === 'object' && s.ai_review ? JSON.stringify(s.ai_review) : null,
   }))
@@ -79,11 +79,7 @@ export async function POST(request: Request) {
     pastSessionsSafe,
   )
 
-  const result = (await callAi({
-    systemPrompt: prompts.systemPrompt,
-    userPrompt: prompts.userPrompt,
-    responseFormat: 'json_object',
-  })) as Partial<AiPlan> | null
+  const result = await callAi(prompts.systemPrompt, prompts.userPrompt)
 
   if (!result || !Array.isArray(result.objectives) || !Array.isArray(result.outline) || !Array.isArray(result.practice_questions)) {
     return NextResponse.json(

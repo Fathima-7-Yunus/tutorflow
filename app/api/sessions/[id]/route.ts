@@ -32,7 +32,6 @@ export async function PATCH(
 
   const body = await request.json()
 
-  // ----- status transition -----
   if (body.status) {
     if (!isValidTransition(existing.status, body.status)) {
       return NextResponse.json(
@@ -70,7 +69,6 @@ export async function PATCH(
     return NextResponse.json({ ok: true })
   }
 
-  // ----- notes autosave -----
   if (typeof body.notes === 'string') {
     if (existing.status === 'completed' || existing.status === 'ai_reviewed') {
       return NextResponse.json({ error: 'Session is already completed and cannot be edited' }, { status: 400 })

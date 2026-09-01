@@ -1,26 +1,4 @@
-interface CallAiOptions {
-  systemPrompt: string
-  userPrompt: string
-  responseFormat?: 'json_object' | 'text'
-}
-
-export async function callAi(options: CallAiOptions) {
-  const { systemPrompt, userPrompt, responseFormat = 'json_object' } = options
-
-  const body: Record<string, unknown> = {
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
-    ],
-    max_tokens: 2000,
-    temperature: 0.7,
-  }
-
-  if (responseFormat === 'json_object') {
-    body.response_format = { type: 'json_object' }
-  }
-
+export async function callAi(systemPrompt: string, userPrompt: string) {
   try {
     const res = await fetch(`${process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1'}/chat/completions`, {
       method: 'POST',
@@ -28,12 +6,20 @@ export async function callAi(options: CallAiOptions) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_tokens: 2000,
+        temperature: 0.7,
+        response_format: { type: 'json_object' },
+      }),
     })
 
     if (!res.ok) {
-      const errText = await res.text()
-      console.error('AI API error:', res.status, errText)
+      console.error('AI API error:', res.status, await res.text())
       return null
     }
 
@@ -41,27 +27,38 @@ export async function callAi(options: CallAiOptions) {
     const content = data.choices?.[0]?.message?.content
     if (!content) return null
 
-    if (responseFormat === 'json_object') {
-      try {
-        return JSON.parse(content)
-      } catch {
-        const jsonMatch = content.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
-          return JSON.parse(jsonMatch[0])
-        }
-        return null
-      }
+    try {
+      return JSON.parse(content)
+    } catch {
+      const jsonMatch = content.match(/\{[\s\S]*\}/)
+      return jsonMatch ? JSON.parse(jsonMatch[0]) : null
     }
-
-    return content
   } catch (err) {
     console.error('AI call failed:', err)
     return null
   }
 }
 
+interface StudentContext {
+  name: string
+  subject: string
+  current_level: string
+  learning_goals: string
+  weak_areas: string
+}
+
+function studentContextLines(s: StudentContext) {
+  return [
+    `- Name: ${s.name}`,
+    `- Subject: ${s.subject}`,
+    `- Current level: ${s.current_level}`,
+    `- Learning goals: ${s.learning_goals}`,
+    `- Weak areas: ${s.weak_areas}`,
+  ].join('\n')
+}
+
 export function buildPlanPrompt(
-  student: { name: string; subject: string; current_level: string; learning_goals: string; weak_areas: string },
+  student: StudentContext,
   topic: string,
   pastSessions: { topic: string; ai_review: string | null }[],
 ) {
@@ -77,11 +74,7 @@ export function buildPlanPrompt(
 
 The plan must be tailored to this specific student's level, goals, and weak areas. Use past session data to avoid repeating topics.`,
     userPrompt: `Create a lesson plan for this student:
-- Name: ${student.name}
-- Subject: ${student.subject}
-- Current level: ${student.current_level}
-- Learning goals: ${student.learning_goals}
-- Weak areas: ${student.weak_areas}
+${studentContextLines(student)}
 
 Topic for this session: ${topic}
 
@@ -93,7 +86,7 @@ Output JSON with objectives, outline (4 points), and practice_questions (3).`,
 }
 
 export function buildReviewPrompt(
-  student: { name: string; subject: string; current_level: string; learning_goals: string; weak_areas: string },
+  student: StudentContext,
   topic: string,
   notes: string,
   pastReviews: string[],
@@ -115,11 +108,7 @@ export function buildReviewPrompt(
 
 Base homework on the student's weak areas and the session content. Homework should be specific and actionable.`,
     userPrompt: `Write a session review for this student:
-- Name: ${student.name}
-- Subject: ${student.subject}
-- Current level: ${student.current_level}
-- Learning goals: ${student.learning_goals}
-- Weak areas: ${student.weak_areas}
+${studentContextLines(student)}
 
 Session topic: ${topic}
 
@@ -137,11 +126,14 @@ Output JSON with summary, homework (2-3 items), and next_suggestion.`,
 
 export function buildProgressPrompt(sessions: { topic: string; ai_review: { summary: string; homework: string[]; next_suggestion: string } | null }[]) {
   const reviewsText = sessions
-    .filter(s => s.ai_review)
-    .map((s, i) => `Session ${i + 1} (Topic: ${s.topic}):
-Summary: ${s.ai_review!.summary}
-Homework: ${s.ai_review!.homework.join(', ')}
-Next suggestion: ${s.ai_review!.next_suggestion}`)
+    .map((s, i) => {
+      if (!s.ai_review) return null
+      return `Session ${i + 1} (Topic: ${s.topic}):
+Summary: ${s.ai_review.summary}
+Homework: ${s.ai_review.homework.join(', ')}
+Next suggestion: ${s.ai_review.next_suggestion}`
+    })
+    .filter(Boolean)
     .join('\n\n')
 
   return {

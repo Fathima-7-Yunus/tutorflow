@@ -1,6 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+function roleRedirect(role: string | undefined, request: NextRequest) {
+  if (role === 'tutor') return NextResponse.redirect(new URL('/tutor', request.url))
+  if (role === 'student') return NextResponse.redirect(new URL('/student', request.url))
+  return NextResponse.redirect(new URL('/login', request.url))
+}
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -43,38 +49,20 @@ export async function proxy(request: NextRequest) {
     .eq('id', user.id)
     .single()
 
-  const role = profile?.role as string | undefined
+  const role = profile?.role
 
-  if (pathname.startsWith('/tutor') && role !== 'tutor') {
-    if (role === 'student') {
-      return NextResponse.redirect(new URL('/student', request.url))
-    }
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (pathname.startsWith('/tutor')) {
+    if (role !== 'tutor') return roleRedirect(role, request)
+    return supabaseResponse
   }
 
-  if (pathname.startsWith('/student') && role !== 'student') {
-    if (role === 'tutor') {
-      return NextResponse.redirect(new URL('/tutor', request.url))
-    }
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (pathname.startsWith('/student')) {
+    if (role !== 'student') return roleRedirect(role, request)
+    return supabaseResponse
   }
 
-  if (pathname === '/login' && role) {
-    if (role === 'tutor') {
-      return NextResponse.redirect(new URL('/tutor', request.url))
-    }
-    if (role === 'student') {
-      return NextResponse.redirect(new URL('/student', request.url))
-    }
-  }
-
-  if (pathname === '/') {
-    if (role === 'tutor') {
-      return NextResponse.redirect(new URL('/tutor', request.url))
-    }
-    if (role === 'student') {
-      return NextResponse.redirect(new URL('/student', request.url))
-    }
+  if (pathname === '/login' || pathname === '/') {
+    return roleRedirect(role, request)
   }
 
   return supabaseResponse

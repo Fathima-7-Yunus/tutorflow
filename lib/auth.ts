@@ -19,7 +19,7 @@ export async function getProfile(): Promise<Profile | null> {
     .select('*')
     .eq('id', user.id)
     .single()
-  return (data as Profile) ?? null
+  return data ?? null
 }
 
 export async function requireUser() {

@@ -41,10 +41,9 @@ export default function SessionNotesEditor({ sessionId, initialNotes, editable }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
       if (lastSavedRef.current !== notes) {
-        const text = notes
         navigator.sendBeacon?.(
           `/api/sessions/${sessionId}`,
-          new Blob([JSON.stringify({ notes: text })], { type: 'application/json' }),
+          new Blob([JSON.stringify({ notes })], { type: 'application/json' }),
         )
       }
     }
